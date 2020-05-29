@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     public Vibrator v;
 
+    private static final String TAG = "MyActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +53,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            sensorManager.registerListener(this, accelerometer,50);
+            sensorManager.registerListener(this, accelerometer,50000);
 
             vibrateThreshold = 3;
         }
@@ -72,7 +75,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onResume(){
         super.onResume();
         //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, accelerometer, 50);
+        sensorManager.registerListener(this, accelerometer, 50000);
 
     }
 
@@ -119,6 +122,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         lastZ = event.values[2];
 
         vibrate();
+        Log.i(TAG, "Sensor Timestamp: " + event.timestamp);
     }
 
     // if the change in the accelerometer value is big enough, then vibrate!
