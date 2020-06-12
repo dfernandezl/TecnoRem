@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            sensorManager.registerListener(this, accelerometer,50000);
+            sensorManager.registerListener(this, accelerometer,12000);
 
             vibrateThreshold = 3;
         }
@@ -75,7 +75,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onResume(){
         super.onResume();
         //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, accelerometer, 50000);
+        sensorManager.registerListener(this, accelerometer, 12000);
 
     }
 
