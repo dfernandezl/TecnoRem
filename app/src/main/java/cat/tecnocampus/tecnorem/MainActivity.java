@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.FloatMath;
 import android.util.Log;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -25,8 +26,10 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaX = 0;
     private float deltaY = 0;
     private float deltaZ = 0;
+    private float deltaAcce = 0;
 
-    private TextView currentX, currentY, currentZ;
+
+    private TextView currentX, currentY, currentZ, currentAcce;
 
     private float vibrateThreshold = 0;
 
@@ -69,6 +72,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         currentX = (TextView) findViewById(R.id.currentX);
         currentY = (TextView) findViewById(R.id.currentY);
         currentZ = (TextView) findViewById(R.id.currentZ);
+        currentAcce = (TextView) findViewById(R.id.currentAcce);
     }
 
     //onResume() register the accelerometer for listening the events
@@ -108,13 +112,18 @@ public class MainActivity extends Activity implements SensorEventListener {
         deltaY = Math.abs(lastY - event.values[1]);
         deltaZ = Math.abs(lastZ - event.values[2]);
 
-//        // if the change is below 2, it is just plain noise
-//        if (deltaX < 0.5)
-//            deltaX = 0;
-//        if (deltaY < 0.5)
-//            deltaY = 0;
-//        if (deltaZ < 0.5)
-//            deltaZ = 0;
+        deltaAcce = (float)Math.sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ);
+
+        // if the change is below 2, it is just plain noise
+        if (deltaX < 0.5)
+            deltaX = 0;
+        if (deltaY < 0.5)
+            deltaY = 0;
+        if (deltaZ < 0.5)
+            deltaZ = 0;
+
+        if(deltaAcce < 0.5)
+            deltaAcce = 0;
 
         // set the last know values of x,y,z
         lastX = event.values[0];
@@ -122,13 +131,13 @@ public class MainActivity extends Activity implements SensorEventListener {
         lastZ = event.values[2];
 
         vibrate();
-        Log.i(TAG, "Sensor Timestamp: " + event.timestamp);
+        //Log.i(TAG, "Sensor Timestamp: " + event.timestamp);
     }
 
     // if the change in the accelerometer value is big enough, then vibrate!
     // our threshold is MaxValue/2
     public void vibrate() {
-        if ((deltaX > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
+        if (deltaAcce > vibrateThreshold) {
             v.vibrate(50);
         }
     }
@@ -142,6 +151,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         currentX.setText("0.0");
         currentY.setText("0.0");
         currentZ.setText("0.0");
+        currentAcce.setText("0.0");
     }
 
     // display the current x,y,z accelerometer values
@@ -149,5 +159,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         currentX.setText(Float.toString(deltaX));
         currentY.setText(Float.toString(deltaY));
         currentZ.setText(Float.toString(deltaZ));
+        currentAcce.setText(Float.toString(deltaAcce));
     }
 }
