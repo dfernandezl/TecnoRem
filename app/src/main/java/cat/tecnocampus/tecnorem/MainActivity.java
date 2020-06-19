@@ -64,16 +64,10 @@ public class MainActivity extends Activity implements SensorEventListener {
             @Override
             public void onClick(View view) {
                 if(timeRunning){ //stop timer
-                    timeBuff += millisecondTime;
-                    handler.removeCallbacks(runnable);
-                    timeRunning = false;
-                    btStartPause.setText("START");
+                    stopRegister();
                 }
                 else{ //continue timer
-                    startTime = SystemClock.uptimeMillis();
-                    handler.postDelayed(runnable,0);
-                    timeRunning = true;
-                    btStartPause.setText("STOP");
+                    startRegister();
                 }
             }
         });
@@ -82,8 +76,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
             // accelerometer OK
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(this, accelerometer,12000);
-
             vibrateThreshold = 3;
         }
         else {
@@ -101,17 +93,33 @@ public class MainActivity extends Activity implements SensorEventListener {
         currentAcce = (TextView) findViewById(R.id.currentAcce);
     }
 
+    public void stopRegister(){
+        timeBuff += millisecondTime;
+        handler.removeCallbacks(runnable);
+        sensorManager.unregisterListener(this);
+        timeRunning = false;
+        btStartPause.setText("START");
+        displayCleanValues();
+    }
+
+    public void startRegister(){
+        startTime = SystemClock.uptimeMillis();
+        handler.postDelayed(runnable,0);
+        sensorManager.registerListener(this, accelerometer,12000);
+        timeRunning = true;
+        btStartPause.setText("STOP");
+    }
+
     //onResume() register the accelerometer for listening the events
     protected void onResume(){
         super.onResume();
-        sensorManager.registerListener(this, accelerometer, 12000);
-
+        //sensorManager.registerListener(this, accelerometer, 12000);
     }
 
     //onPause() unregister the accelerometer for stop listening the events
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(this);
+        stopRegister();
     }
 
 
