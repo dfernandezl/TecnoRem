@@ -1,7 +1,5 @@
 package cat.tecnocampus.tecnorem;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -10,11 +8,10 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.FloatMath;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -28,6 +25,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaZ = 0;
     private float deltaAcce = 0;
 
+    private boolean recording;
 
     private TextView currentX, currentY, currentZ, currentAcce;
 
@@ -43,7 +41,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
         initializeViews();
 
+        recording = false;
+
         NumberPicker npRowSpeed = findViewById(R.id.npRowSpeed);
+        Button btStartPause = findViewById(R.id.btStart);
 
         npRowSpeed.setMinValue(10);
         npRowSpeed.setMaxValue(60);
@@ -55,8 +56,25 @@ public class MainActivity extends Activity implements SensorEventListener {
             // accelerometer OK
 
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            sensorManager.registerListener(this, accelerometer,12000);
+//            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+//            sensorManager.registerListener(this, accelerometer,12000);
+
+            btStartPause.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(recording == true){
+                        onPause();
+                        recording = false;
+                    }
+                    else{
+                        onResume();
+                        recording = true;
+                    }
+
+                }
+            });
+
+
 
             vibrateThreshold = 3;
         }
