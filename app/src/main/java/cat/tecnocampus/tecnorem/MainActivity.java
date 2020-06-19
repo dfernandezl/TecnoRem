@@ -7,7 +7,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.os.Vibrator;
+import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -32,6 +35,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private static final String TAG = "MyActivity";
 
+    private TextView timer;
+    private Button btStartPause;
+    private long millisecondTime, startTime, timeBuff, updateTime = 0L;
+    private Handler handler;
+    private int seconds, minutes, milliseconds;
+    private boolean timeRunning = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +54,29 @@ public class MainActivity extends Activity implements SensorEventListener {
         npRowSpeed.setMaxValue(60);
         npRowSpeed.setWrapSelectorWheel(false);
         npRowSpeed.setOnValueChangedListener(onValueChangeListener);
+
+        timer = (TextView)findViewById(R.id.txtTimer);
+        btStartPause = (Button)findViewById(R.id.btStartPause);
+
+        handler = new Handler();
+
+        btStartPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(timeRunning){ //stop timer
+                    timeBuff += millisecondTime;
+                    handler.removeCallbacks(runnable);
+                    timeRunning = false;
+                    btStartPause.setText("START");
+                }
+                else{ //continue timer
+                    startTime = SystemClock.uptimeMillis();
+                    handler.postDelayed(runnable,0);
+                    timeRunning = true;
+                    btStartPause.setText("STOP");
+                }
+            }
+        });
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
@@ -153,4 +186,22 @@ public class MainActivity extends Activity implements SensorEventListener {
         currentZ.setText(Float.toString(deltaZ));
         currentAcce.setText(Float.toString(deltaAcce));
     }
+
+    public Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            millisecondTime = SystemClock.uptimeMillis() - startTime;
+            updateTime = timeBuff + millisecondTime;
+
+            seconds = (int) (updateTime / 1000);
+            minutes = seconds / 60;
+            seconds = seconds % 60;
+            milliseconds = (int) (updateTime % 1000);
+
+            timer.setText("" +minutes+ ":" +String.format("%02d", seconds) +":" +String.format("%03d", milliseconds));
+
+            handler.postDelayed(this,0);
+        }
+    };
+
 }

@@ -67,12 +67,23 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btStart"
+            android:id="@+id/btStartPause"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
             android:backgroundTint="#FF9800"
             android:text="START" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/txtTimer"
+            android:text="00:00:00"
+            android:textColor="@android:color/black"
+            android:textSize="50dp"
+            android:textStyle="bold"/>
+
 
     </LinearLayout>
 
