@@ -8,7 +8,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -25,8 +24,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaZ = 0;
     private float deltaAcce = 0;
 
-    private boolean recording;
-
     private TextView currentX, currentY, currentZ, currentAcce;
 
     private float vibrateThreshold = 0;
@@ -41,10 +38,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
         initializeViews();
 
-        recording = false;
-
         NumberPicker npRowSpeed = findViewById(R.id.npRowSpeed);
-        Button btStartPause = findViewById(R.id.btStart);
 
         npRowSpeed.setMinValue(10);
         npRowSpeed.setMaxValue(60);
@@ -54,27 +48,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
             // accelerometer OK
-
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-//            sensorManager.registerListener(this, accelerometer,12000);
-
-            btStartPause.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(recording == true){
-                        onPause();
-                        recording = false;
-                    }
-                    else{
-                        onResume();
-                        recording = true;
-                    }
-
-                }
-            });
-
-
+            sensorManager.registerListener(this, accelerometer,12000);
 
             vibrateThreshold = 3;
         }
@@ -96,7 +71,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     //onResume() register the accelerometer for listening the events
     protected void onResume(){
         super.onResume();
-        //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, accelerometer, 12000);
 
     }
