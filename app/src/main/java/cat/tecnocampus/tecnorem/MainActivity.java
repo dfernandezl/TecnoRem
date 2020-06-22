@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -14,6 +15,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -35,12 +39,18 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private static final String TAG = "MyActivity";
 
-    private TextView timer;
+    private TextView chrono;
     private Button btStartPause;
+    private NumberPicker npRowSpeed;
     private long millisecondTime, startTime, timeBuff, updateTime = 0L;
     private Handler handler;
     private int seconds, minutes, milliseconds;
     private boolean timeRunning = false;
+
+    private Timer timer;
+    private MediaPlayer mp;
+    private TimerTask tone;
+    private int periodTime = 6000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +58,14 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
         initializeViews();
 
-        NumberPicker npRowSpeed = findViewById(R.id.npRowSpeed);
+        npRowSpeed = findViewById(R.id.npRowSpeed);
 
         npRowSpeed.setMinValue(10);
         npRowSpeed.setMaxValue(60);
         npRowSpeed.setWrapSelectorWheel(false);
         npRowSpeed.setOnValueChangedListener(onValueChangeListener);
 
-        timer = (TextView)findViewById(R.id.txtTimer);
+        chrono = (TextView)findViewById(R.id.txtTimer);
         btStartPause = (Button)findViewById(R.id.btStartPause);
 
         handler = new Handler();
@@ -100,6 +110,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         timeRunning = false;
         btStartPause.setText("START");
         displayCleanValues();
+        mp.stop();
+        tone.cancel();
+        mp.release();
+        timer.cancel();
+
+        npRowSpeed.setVisibility(View.VISIBLE);
     }
 
     public void startRegister(){
@@ -108,6 +124,19 @@ public class MainActivity extends Activity implements SensorEventListener {
         sensorManager.registerListener(this, accelerometer,12000);
         timeRunning = true;
         btStartPause.setText("STOP");
+
+        npRowSpeed.setVisibility(View.GONE);
+
+        timer = new Timer("MetronomeTimer", true);
+        mp = MediaPlayer.create(this, R.raw.beep);
+        tone = new TimerTask(){
+            @Override
+            public void run(){
+                //Play sound
+                mp.start();
+            }
+        };
+        timer.scheduleAtFixedRate(tone, 0, periodTime);
     }
 
     //onResume() register the accelerometer for listening the events
@@ -128,6 +157,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
             TextView txtRowSpeedSelector = findViewById(R.id.txtRowSpeedSelector);
             txtRowSpeedSelector.setText("Selected speed: "+newVal);
+            periodTime = (60 / newVal)*1000;
         }
     };
 
@@ -206,7 +236,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             seconds = seconds % 60;
             milliseconds = (int) (updateTime % 1000);
 
-            timer.setText("" +minutes+ ":" +String.format("%02d", seconds) +":" +String.format("%03d", milliseconds));
+            chrono.setText("" +minutes+ ":" +String.format("%02d", seconds) +":" +String.format("%03d", milliseconds));
 
             handler.postDelayed(this,0);
         }
