@@ -10,6 +10,7 @@ import android.widget.TextView;
 import cat.tecnocampus.tecnorem.Chronometer.Chronometer;
 import cat.tecnocampus.tecnorem.Metronome.Metronome;
 import cat.tecnocampus.tecnorem.Sensors.Accelerometer;
+import cat.tecnocampus.tecnorem.Sensors.Gps;
 
 public class MainActivity extends Activity {
 
@@ -20,6 +21,7 @@ public class MainActivity extends Activity {
     private Accelerometer accelerometer;
     private Chronometer chronometer;
     private Metronome metronome;
+    private Gps gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,7 @@ public class MainActivity extends Activity {
         accelerometer = new Accelerometer(this);
         chronometer = new Chronometer(this);
         metronome = new Metronome(this);
+        gps = new Gps(this);
 
         accelerometer.initializeViews();
 
