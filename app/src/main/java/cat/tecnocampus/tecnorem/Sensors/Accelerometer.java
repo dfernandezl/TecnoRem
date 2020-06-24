@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 import cat.tecnocampus.tecnorem.R;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 public class Accelerometer implements SensorEventListener {
 
     private float lastX, lastY, lastZ;
@@ -21,7 +19,7 @@ public class Accelerometer implements SensorEventListener {
 
     private TextView currentX, currentY, currentZ, currentAcce;
 
-    Context context;
+    private Context context;
 
     private float deltaX = 0;
     private float deltaY = 0;
