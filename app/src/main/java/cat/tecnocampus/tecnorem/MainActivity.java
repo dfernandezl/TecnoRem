@@ -1,34 +1,25 @@
 package cat.tecnocampus.tecnorem;
 
 import android.app.Activity;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import cat.tecnocampus.tecnorem.Chronometer.Chronometer;
+import cat.tecnocampus.tecnorem.Metronome.Metronome;
 import cat.tecnocampus.tecnorem.Sensors.Accelerometer;
 
 public class MainActivity extends Activity {
-
-    private static final String TAG = "MyActivity";
 
     private NumberPicker npRowSpeed;
 
     private Button btStartPause;
 
-    private Timer timer;
-    private MediaPlayer mp;
-    private TimerTask tone;
-    private int periodTime = 6000;
-
     private Accelerometer accelerometer;
     private Chronometer chronometer;
+    private Metronome metronome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +28,7 @@ public class MainActivity extends Activity {
 
         accelerometer = new Accelerometer(this);
         chronometer = new Chronometer(this);
+        metronome = new Metronome(this);
 
         accelerometer.initializeViews();
 
@@ -48,8 +40,6 @@ public class MainActivity extends Activity {
         npRowSpeed.setOnValueChangedListener(onValueChangeListener);
 
         btStartPause = (Button)findViewById(R.id.btStartPause);
-
-
 
         btStartPause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,33 +57,18 @@ public class MainActivity extends Activity {
     public void stopRegister(){
         chronometer.stopChronometer();
         accelerometer.stopAccelerometer();
+        metronome.stopMetronome();
         btStartPause.setText("START");
         accelerometer.displayCleanValues();
-        mp.stop();
-        tone.cancel();
-        mp.release();
-        timer.cancel();
-
         npRowSpeed.setVisibility(View.VISIBLE);
     }
 
     public void startRegister(){
         chronometer.startChronometer();
         accelerometer.startAccelerometer();
+        metronome.startMetronome();
         btStartPause.setText("STOP");
-
         npRowSpeed.setVisibility(View.GONE);
-
-        timer = new Timer("MetronomeTimer", true);
-        mp = MediaPlayer.create(this, R.raw.beep);
-        tone = new TimerTask(){
-            @Override
-            public void run(){
-                //Play sound
-                mp.start();
-            }
-        };
-        timer.scheduleAtFixedRate(tone, 0, periodTime);
     }
 
     //onResume() register the accelerometer for listening the events
@@ -114,7 +89,7 @@ public class MainActivity extends Activity {
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
             TextView txtRowSpeedSelector = findViewById(R.id.txtRowSpeedSelector);
             txtRowSpeedSelector.setText("Selected speed: "+newVal);
-            periodTime = (60 / newVal)*1000;
+            metronome.setPeriodTime((60 / newVal)*1000);
         }
     };
 
