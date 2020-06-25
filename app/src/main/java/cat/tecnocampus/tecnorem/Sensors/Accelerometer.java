@@ -6,7 +6,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.opengl.Matrix;
 import android.os.Vibrator;
+import android.util.Log;
 import android.widget.TextView;
 
 import cat.tecnocampus.tecnorem.R;
@@ -26,6 +28,8 @@ public class Accelerometer implements SensorEventListener {
     private float deltaZ = 0;
     private float deltaAcce = 0;
 
+    private float[] gravityValues = null;
+    private float[] magneticValues = null;
 
     private float vibrateThreshold = 0;
 
@@ -64,31 +68,60 @@ public class Accelerometer implements SensorEventListener {
         // display the current x,y,z accelerometer values
         displayCurrentValues();
 
+        if((gravityValues != null) && (magneticValues != null) && (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)) {
 
-        // get the change of the x,y,z values of the accelerometer
-        deltaX = Math.abs(lastX - event.values[0]);
-        deltaY = Math.abs(lastY - event.values[1]);
-        deltaZ = Math.abs(lastZ - event.values[2]);
+            float[] deviceRelativeAccleration = new float[4];
+            deviceRelativeAccleration[0] = event.values[0];
+            deviceRelativeAccleration[1] = event.values[1];
+            deviceRelativeAccleration[2] = event.values[2];
+            deviceRelativeAccleration[3] = 0;
+
+            // Change the device relative acceleration values to earth relative values
+            // X axis -> East
+            // Y axis -> North Pole
+            // Z axis -> Sky
+
+            float[] R = new float[16], I = new float[16], earthAcc = new float[16];
+
+            SensorManager.getRotationMatrix(R, I, gravityValues, magneticValues);
+
+            float[] inv = new float[16];
+
+            android.opengl.Matrix.invertM(inv, 0, R, 0);
+            android.opengl.Matrix.multiplyMV(earthAcc, 0, inv, 0, deviceRelativeAccleration, 0);
+
+            Log.d("Acceleration", "Values: (" + earthAcc[0] + ", " + earthAcc[1] + ", " + earthAcc[2] + ")");
+
+            deltaX = earthAcc[0];
+            deltaY = earthAcc[1];
+            deltaZ = earthAcc[2];
+
+        } else if(event.sensor.getType() == Sensor.TYPE_GRAVITY){
+            gravityValues = event.values;
+        } else if(event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+            magneticValues = event.values;
+        }
+
 
         deltaAcce = (float)Math.sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ);
 
         // if the change is below 2, it is just plain noise
-        if (deltaX < 0.5)
-            deltaX = 0;
-        if (deltaY < 0.5)
-            deltaY = 0;
-        if (deltaZ < 0.5)
-            deltaZ = 0;
-
-        if(deltaAcce < 0.5)
-            deltaAcce = 0;
-
-        // set the last know values of x,y,z
-        lastX = event.values[0];
-        lastY = event.values[1];
-        lastZ = event.values[2];
-
-        vibrate();
+//        if (deltaX < 0.5)
+//            deltaX = 0;
+//        if (deltaY < 0.5)
+//            deltaY = 0;
+//        if (deltaZ < 0.5)
+//            deltaZ = 0;
+//
+//        if(deltaAcce < 0.5)
+//            deltaAcce = 0;
+//
+//        // set the last know values of x,y,z
+//        lastX = event.values[0];
+//        lastY = event.values[1];
+//        lastZ = event.values[2];
+//
+//        vibrate();
         //Log.i(TAG, "Sensor Timestamp: " + event.timestamp);
     }
 
