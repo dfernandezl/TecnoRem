@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import cat.tecnocampus.tecnorem.Chronometer.Chronometer;
@@ -14,14 +13,14 @@ import cat.tecnocampus.tecnorem.Sensors.Gps;
 
 public class MainActivity extends Activity {
 
-    private NumberPicker npRowSpeed;
-
-    private Button btStartPause;
+    private Button btStartPause, increase, decrease;
 
     private Accelerometer accelerometer;
     private Chronometer chronometer;
     private Metronome metronome;
     private Gps gps;
+
+    private int minteger = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +34,9 @@ public class MainActivity extends Activity {
 
         accelerometer.initializeViews();
 
-        npRowSpeed = findViewById(R.id.npRowSpeed);
-
-        npRowSpeed.setMinValue(10);
-        npRowSpeed.setMaxValue(60);
-        npRowSpeed.setWrapSelectorWheel(false);
-        npRowSpeed.setOnValueChangedListener(onValueChangeListener);
-
         btStartPause = (Button)findViewById(R.id.btStartPause);
+        increase = (Button)findViewById(R.id.increase);
+        decrease = (Button)findViewById(R.id.decrease);
 
         btStartPause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +49,7 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
     }
 
     public void stopRegister(){
@@ -63,7 +58,18 @@ public class MainActivity extends Activity {
         metronome.stopMetronome();
         btStartPause.setText("START");
         accelerometer.displayCleanValues();
-        npRowSpeed.setVisibility(View.VISIBLE);
+
+        if(minteger == 10){
+            decrease.setEnabled(false);
+        } else{
+            decrease.setEnabled(true);
+        }
+
+        if(minteger == 60){
+            increase.setEnabled(false);
+        } else{
+            increase.setEnabled(true);
+        }
     }
 
     public void startRegister(){
@@ -71,7 +77,8 @@ public class MainActivity extends Activity {
         accelerometer.startAccelerometer();
         metronome.startMetronome();
         btStartPause.setText("STOP");
-        npRowSpeed.setVisibility(View.GONE);
+        increase.setEnabled(false);
+        decrease.setEnabled(false);
     }
 
     //onResume() register the accelerometer for listening the events
@@ -88,14 +95,34 @@ public class MainActivity extends Activity {
         super.onPause();
     }
 
+    public void increaseInteger(View view){
+        minteger = minteger + 1;
+        display(minteger);
 
-    NumberPicker.OnValueChangeListener onValueChangeListener = new NumberPicker.OnValueChangeListener() {
-        @Override
-        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-            TextView txtRowSpeedSelector = findViewById(R.id.txtRowSpeedSelector);
-            txtRowSpeedSelector.setText("Selected speed: "+newVal);
-            metronome.setPeriodTime((60 / newVal)*1000);
+        if(minteger == 60){
+            increase.setEnabled(false);
+        } else {
+            increase.setEnabled(true);
+            decrease.setEnabled(true);
         }
-    };
+    }
 
+    public void decreaseInteger(View view){
+        minteger = minteger - 1;
+        display(minteger);
+
+        if(minteger == 10){
+            decrease.setEnabled(false);
+        } else {
+            decrease.setEnabled(true);
+            increase.setEnabled(true);
+        }
+
+    }
+
+    public void display(int number){
+        TextView displayInteger = (TextView) findViewById(R.id.integer_number);
+        displayInteger.setText(""+number);
+        metronome.setPeriodTime((60 / number)*1000);
+    }
 }
