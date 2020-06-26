@@ -108,7 +108,7 @@
             android:id="@+id/txtTimer"
             android:text="00:00:00"
             android:textColor="@android:color/black"
-            android:textSize="50dp"
+            android:textSize="25dp"
             android:textStyle="bold"/>
 
 
@@ -131,7 +131,6 @@
             android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-
     </RelativeLayout>
 
 </LinearLayout>

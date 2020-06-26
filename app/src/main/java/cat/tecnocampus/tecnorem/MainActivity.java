@@ -82,8 +82,10 @@ public class MainActivity extends Activity {
 
     //onPause() unregister the accelerometer for stop listening the events
     protected void onPause() {
+        if(chronometer.isTimeRunning()){
+            stopRegister();
+        }
         super.onPause();
-        stopRegister();
     }
 
 

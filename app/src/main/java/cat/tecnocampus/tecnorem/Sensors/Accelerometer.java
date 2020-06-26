@@ -6,9 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.opengl.Matrix;
 import android.os.Vibrator;
-import android.util.Log;
 import android.widget.TextView;
 
 import cat.tecnocampus.tecnorem.R;
@@ -17,7 +15,7 @@ public class Accelerometer implements SensorEventListener {
 
     private float lastX, lastY, lastZ;
     private SensorManager sensorManager;
-    private Sensor accelerometer;
+    private Sensor accelerometer, gravity, magnetic;
 
     private TextView currentX, currentY, currentZ, currentAcce;
 
@@ -42,7 +40,10 @@ public class Accelerometer implements SensorEventListener {
         if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
             // accelerometer OK
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            vibrateThreshold = 3;
+            gravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+            magnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+            vibrateThreshold = 2;
         }
         else {
             // fail, accelerometer not available (print some message!)
@@ -58,23 +59,27 @@ public class Accelerometer implements SensorEventListener {
 
     public void startAccelerometer(){
         sensorManager.registerListener((SensorEventListener) this, accelerometer,12000);
+        sensorManager.registerListener((SensorEventListener) this, gravity, 12000);
+        sensorManager.registerListener((SensorEventListener)this, magnetic, 12000);
     }
 
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+
         // clean current values
         displayCleanValues();
         // display the current x,y,z accelerometer values
         displayCurrentValues();
 
-        if((gravityValues != null) && (magneticValues != null) && (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)) {
+        if ((gravityValues != null) && (magneticValues != null)
+                && (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)) {
 
-            float[] deviceRelativeAccleration = new float[4];
-            deviceRelativeAccleration[0] = event.values[0];
-            deviceRelativeAccleration[1] = event.values[1];
-            deviceRelativeAccleration[2] = event.values[2];
-            deviceRelativeAccleration[3] = 0;
+            float[] deviceRelativeAcceleration = new float[4];
+            deviceRelativeAcceleration[0] = event.values[0];
+            deviceRelativeAcceleration[1] = event.values[1];
+            deviceRelativeAcceleration[2] = event.values[2];
+            deviceRelativeAcceleration[3] = 0;
 
             // Change the device relative acceleration values to earth relative values
             // X axis -> East
@@ -88,41 +93,31 @@ public class Accelerometer implements SensorEventListener {
             float[] inv = new float[16];
 
             android.opengl.Matrix.invertM(inv, 0, R, 0);
-            android.opengl.Matrix.multiplyMV(earthAcc, 0, inv, 0, deviceRelativeAccleration, 0);
+            android.opengl.Matrix.multiplyMV(earthAcc, 0, inv, 0, deviceRelativeAcceleration, 0);
 
-            Log.d("Acceleration", "Values: (" + earthAcc[0] + ", " + earthAcc[1] + ", " + earthAcc[2] + ")");
+            deltaX = Math.abs(lastX - earthAcc[0]);
+            deltaY = Math.abs(lastY - earthAcc[1]);
+            deltaZ = Math.abs(lastZ - earthAcc[2]);
 
-            deltaX = earthAcc[0];
-            deltaY = earthAcc[1];
-            deltaZ = earthAcc[2];
+            // if the change is below 2, it is just plain noise
+            if (deltaX < 2)
+                deltaX = 0;
+            if (deltaY < 2)
+                deltaY = 0;
+            if (deltaZ < 2)
+                deltaZ = 0;
 
-        } else if(event.sensor.getType() == Sensor.TYPE_GRAVITY){
+            lastX = earthAcc[0];
+            lastY = earthAcc[1];
+            lastZ = earthAcc[2];
+
+            vibrate();
+
+        } else if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
             gravityValues = event.values;
-        } else if(event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             magneticValues = event.values;
         }
-
-
-        deltaAcce = (float)Math.sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ);
-
-        // if the change is below 2, it is just plain noise
-//        if (deltaX < 0.5)
-//            deltaX = 0;
-//        if (deltaY < 0.5)
-//            deltaY = 0;
-//        if (deltaZ < 0.5)
-//            deltaZ = 0;
-//
-//        if(deltaAcce < 0.5)
-//            deltaAcce = 0;
-//
-//        // set the last know values of x,y,z
-//        lastX = event.values[0];
-//        lastY = event.values[1];
-//        lastZ = event.values[2];
-//
-//        vibrate();
-        //Log.i(TAG, "Sensor Timestamp: " + event.timestamp);
     }
 
     @Override
@@ -133,7 +128,7 @@ public class Accelerometer implements SensorEventListener {
     // if the change in the accelerometer value is big enough, then vibrate!
     // our threshold is MaxValue/2
     public void vibrate() {
-        if (deltaAcce > vibrateThreshold) {
+        if (deltaX > vibrateThreshold || deltaY > vibrateThreshold || deltaZ > vibrateThreshold) {
             v.vibrate(50);
         }
     }
