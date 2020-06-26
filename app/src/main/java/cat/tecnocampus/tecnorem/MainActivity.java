@@ -58,18 +58,6 @@ public class MainActivity extends Activity {
         metronome.stopMetronome();
         btStartPause.setText("START");
         accelerometer.displayCleanValues();
-
-        if(minteger == 10){
-            decrease.setEnabled(false);
-        } else{
-            decrease.setEnabled(true);
-        }
-
-        if(minteger == 60){
-            increase.setEnabled(false);
-        } else{
-            increase.setEnabled(true);
-        }
     }
 
     public void startRegister(){
@@ -77,8 +65,6 @@ public class MainActivity extends Activity {
         accelerometer.startAccelerometer();
         metronome.startMetronome();
         btStartPause.setText("STOP");
-        increase.setEnabled(false);
-        decrease.setEnabled(false);
     }
 
     //onResume() register the accelerometer for listening the events
@@ -123,6 +109,12 @@ public class MainActivity extends Activity {
     public void display(int number){
         TextView displayInteger = (TextView) findViewById(R.id.integer_number);
         displayInteger.setText(""+number);
+        if(chronometer.isTimeRunning()){
+            metronome.stopMetronome();
+        }
         metronome.setPeriodTime((60 / number)*1000);
+        if(chronometer.isTimeRunning()){
+            metronome.startMetronome();
+        }
     }
 }

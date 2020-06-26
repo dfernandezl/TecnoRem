@@ -31,7 +31,7 @@ public class Metronome {
                 mp.start();
             }
         };
-        timer.scheduleAtFixedRate(tone, 0, periodTime);
+        timer.scheduleAtFixedRate(tone, 2000, periodTime);
     }
 
     public void stopMetronome(){
