@@ -17,14 +17,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-
-import cat.tecnocampus.tecnorem.R;
 
 public class Gps extends AppCompatActivity implements LocationListener {
 
@@ -44,8 +40,17 @@ public class Gps extends AppCompatActivity implements LocationListener {
     boolean isNetwork = false;
     boolean canGetLocation = true;
 
+    private double lastLatitude, lastLongitude;
+    private long lastTime;
+
+    private double distance, bearing;
+
+    private Accelerometer accelerometer;
+
     public Gps(Context context) {
         this.context = context;
+
+        accelerometer = new Accelerometer(context);
 
         locationManager = (LocationManager) context.getSystemService(Service.LOCATION_SERVICE);
         isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -79,7 +84,7 @@ public class Gps extends AppCompatActivity implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged");
-        updateUI(location);
+        updateSpeeds(location);
     }
 
     @Override
@@ -113,7 +118,7 @@ public class Gps extends AppCompatActivity implements LocationListener {
                     if (locationManager != null) {
                         loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         if (loc != null)
-                            updateUI(loc);
+                            updateSpeeds(loc);
                     }
                 } else if (isNetwork) {
                     // from Network Provider
@@ -126,12 +131,12 @@ public class Gps extends AppCompatActivity implements LocationListener {
                     if (locationManager != null) {
                         loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         if (loc != null)
-                            updateUI(loc);
+                            updateSpeeds(loc);
                     }
                 } else {
                     loc.setLatitude(0);
                     loc.setLongitude(0);
-                    updateUI(loc);
+                    updateSpeeds(loc);
                 }
             } else {
                 Log.d(TAG, "Can't get location");
@@ -244,10 +249,6 @@ public class Gps extends AppCompatActivity implements LocationListener {
                 .show();
     }
 
-    private void updateUI(Location loc) {
-    }
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -255,4 +256,27 @@ public class Gps extends AppCompatActivity implements LocationListener {
             locationManager.removeUpdates(this);
         }
     }
+
+    private void updateSpeeds(Location loc) {
+        float[] res = new float[2];
+        Location.distanceBetween(lastLatitude, lastLongitude, loc.getLatitude(), loc.getLongitude(), res);
+
+        long deltaTime = loc.getTime() - lastTime;
+
+        lastLatitude = loc.getLatitude();
+        lastLongitude = loc.getLongitude();
+        lastTime = loc.getTime();
+
+        distance = res[0];
+        bearing = res[1];
+
+        double speedX = (distance * Math.cos(bearing)) / deltaTime;
+        double speedY = (distance * Math.sin(bearing)) / deltaTime;
+        double speedZ = 0;
+
+        accelerometer.setSpeedX(speedX);
+        accelerometer.setSpeedY(speedY);
+        accelerometer.setSpeedZ(speedZ);
+    }
+
 }

@@ -33,6 +33,8 @@ public class Accelerometer implements SensorEventListener {
 
     public Vibrator v;
 
+    private double speedX, speedY, speedZ;
+
     public Accelerometer(Context context) {
         this.context = context;
 
@@ -110,6 +112,8 @@ public class Accelerometer implements SensorEventListener {
             lastY = earthAcc[1];
             lastZ = earthAcc[2];
 
+            deltaAcce = computeDeltaAcce();
+
             vibrate();
 
         } else if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
@@ -143,5 +147,24 @@ public class Accelerometer implements SensorEventListener {
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
         currentAcce.setText(Float.toString(deltaAcce));
+    }
+
+    private float computeDeltaAcce() {
+        double scalarProduct = (speedX*lastX) + (speedY*lastY) + (speedZ*lastZ);
+        double speedModule = Math.sqrt(speedX*speedX + speedY*speedY + speedZ*speedZ);
+
+        return (float) (scalarProduct / speedModule);
+    }
+
+    public void setSpeedX(double speedX) {
+        this.speedX = speedX;
+    }
+
+    public void setSpeedY(double speedY) {
+        this.speedY = speedY;
+    }
+
+    public void setSpeedZ(double speedZ) {
+        this.speedZ = speedZ;
     }
 }
