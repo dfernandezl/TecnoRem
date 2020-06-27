@@ -253,15 +253,9 @@ public class Gps extends AppCompatActivity implements LocationListener {
     }
 
     private void updateUI(Location loc) {
-        Log.d(TAG, "updateUI");
         tvLatitude.setText(Double.toString(loc.getLatitude()));
-        rowingRegister.setCurrentLatitude(loc.getLatitude());
         tvLongitude.setText(Double.toString(loc.getLongitude()));
-        rowingRegister.setCurrentLongitude(loc.getLongitude());
-        rowingRegister.setCurrentPositionTime(loc.getTime());
         tvTime.setText(DateFormat.getTimeInstance().format(loc.getTime()));
-
-
     }
 
 
