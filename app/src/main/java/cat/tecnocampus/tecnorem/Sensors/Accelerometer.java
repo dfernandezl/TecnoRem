@@ -127,7 +127,7 @@ public class Accelerometer implements SensorEventListener {
     // if the change in the accelerometer value is big enough, then vibrate!
     // our threshold is MaxValue/2
     public void vibrate() {
-        if (deltaX > vibrateThreshold || deltaY > vibrateThreshold || deltaZ > vibrateThreshold) {
+        if (deltaAcce > vibrateThreshold) {
             v.vibrate(50);
         }
     }
