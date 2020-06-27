@@ -17,7 +17,7 @@ public class Accelerometer implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer, gravity, magnetic;
 
-    private TextView currentX, currentY, currentZ, currentAcce;
+    private TextView currentAcce;
 
     private Context context;
 
@@ -66,7 +66,6 @@ public class Accelerometer implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
         // clean current values
         displayCleanValues();
         // display the current x,y,z accelerometer values
@@ -134,24 +133,15 @@ public class Accelerometer implements SensorEventListener {
     }
 
     public void initializeViews(){
-        currentX = (TextView) ((Activity)context).findViewById(R.id.currentX);
-        currentY = (TextView) ((Activity)context).findViewById(R.id.currentY);
-        currentZ = (TextView) ((Activity)context).findViewById(R.id.currentZ);
         currentAcce = (TextView) ((Activity)context).findViewById(R.id.currentAcce);
     }
 
     public void displayCleanValues() {
-        currentX.setText("0.0");
-        currentY.setText("0.0");
-        currentZ.setText("0.0");
         currentAcce.setText("0.0");
     }
 
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
-        currentX.setText(Float.toString(deltaX));
-        currentY.setText(Float.toString(deltaY));
-        currentZ.setText(Float.toString(deltaZ));
         currentAcce.setText(Float.toString(deltaAcce));
     }
 }

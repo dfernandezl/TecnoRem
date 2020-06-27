@@ -24,20 +24,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.text.DateFormat;
 import java.util.ArrayList;
 
-import cat.tecnocampus.tecnorem.Domain.RowingRegister;
 import cat.tecnocampus.tecnorem.R;
 
 public class Gps extends AppCompatActivity implements LocationListener {
 
     private Context context;
-    private RowingRegister rowingRegister;
 
     final String TAG = "GPS";
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 5;
     private static final long MIN_TIME_BW_UPDATES = 2000;
 
-    private TextView tvLatitude, tvLongitude, tvTime;
     private LocationManager locationManager;
     private Location loc;
     private ArrayList<String> permissions = new ArrayList<>();
@@ -49,11 +46,6 @@ public class Gps extends AppCompatActivity implements LocationListener {
 
     public Gps(Context context) {
         this.context = context;
-        rowingRegister = new RowingRegister();
-
-        tvLatitude = (TextView) ((Activity)context).findViewById(R.id.txtLatitude);
-        tvLongitude = (TextView) ((Activity)context).findViewById(R.id.txtLongitude);
-        tvTime = (TextView) ((Activity)context).findViewById(R.id.txtTime);
 
         locationManager = (LocationManager) context.getSystemService(Service.LOCATION_SERVICE);
         isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -253,9 +245,6 @@ public class Gps extends AppCompatActivity implements LocationListener {
     }
 
     private void updateUI(Location loc) {
-        tvLatitude.setText(Double.toString(loc.getLatitude()));
-        tvLongitude.setText(Double.toString(loc.getLongitude()));
-        tvTime.setText(DateFormat.getTimeInstance().format(loc.getTime()));
     }
 
 

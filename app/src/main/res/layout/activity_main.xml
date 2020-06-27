@@ -17,33 +17,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/currentX"
-            android:text="current row speed X"
-            android:textColor="@android:color/black"
-            android:textSize="25dp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/currentY"
-            android:text="current row speed Y"
-            android:textColor="@android:color/black"
-            android:textSize="25dp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/currentZ"
-            android:text="current row speed Z"
-            android:textColor="@android:color/black"
-            android:textSize="25dp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/currentAcce"
             android:text="current acceleration"
             android:textColor="@android:color/black"
@@ -59,32 +32,6 @@
             android:textSize="10dp"
             android:textStyle="bold"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtLatitude"
-            android:text="LATITUDE"
-            android:textColor="@android:color/black"
-            android:textSize="10dp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtLongitude"
-            android:text="LONGITUDE"
-            android:textColor="@android:color/black"
-            android:textSize="10dp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtTime"
-            android:text="TIME"
-            android:textColor="@android:color/black"
-            android:textSize="10dp"
-            android:textStyle="bold"/>
     </LinearLayout>
 
     <LinearLayout
