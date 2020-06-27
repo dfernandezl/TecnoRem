@@ -274,6 +274,8 @@ public class Gps extends AppCompatActivity implements LocationListener {
         double speedY = (distance * Math.sin(bearing)) / deltaTime;
         double speedZ = 0;
 
+        Log.d(TAG, ""+speedX+" "+speedY+" "+speedZ); //OK WORKING
+
         accelerometer.setSpeedX(speedX);
         accelerometer.setSpeedY(speedY);
         accelerometer.setSpeedZ(speedZ);

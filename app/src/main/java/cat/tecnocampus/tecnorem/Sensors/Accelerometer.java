@@ -7,11 +7,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Vibrator;
+import android.util.Log;
 import android.widget.TextView;
 
 import cat.tecnocampus.tecnorem.R;
 
 public class Accelerometer implements SensorEventListener {
+
+    final String TAG = "ACCELEROMETER";
 
     private float lastX, lastY, lastZ;
     private SensorManager sensorManager;
@@ -151,6 +154,9 @@ public class Accelerometer implements SensorEventListener {
 
     private float computeDeltaAcce() {
         double scalarProduct = (speedX*lastX) + (speedY*lastY) + (speedZ*lastZ);
+
+        Log.d(TAG, ""+this.speedX+" "+this.speedY+" "+this.speedZ);
+
         double speedModule = Math.sqrt(speedX*speedX + speedY*speedY + speedZ*speedZ);
 
         return (float) (scalarProduct / speedModule);
