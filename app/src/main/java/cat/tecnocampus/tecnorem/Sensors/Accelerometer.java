@@ -34,12 +34,14 @@ public class Accelerometer implements SensorEventListener {
 
     private float vibrateThreshold = 0;
 
-    public Vibrator v;
+    private Gps gps;
 
-    private double speedX, speedY, speedZ;
+    public Vibrator v;
 
     public Accelerometer(Context context) {
         this.context = context;
+
+        gps = new Gps(context);
 
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
@@ -59,13 +61,13 @@ public class Accelerometer implements SensorEventListener {
     }
 
     public void stopAccelerometer(){
-        sensorManager.unregisterListener((SensorEventListener) this);
+        sensorManager.unregisterListener(this);
     }
 
     public void startAccelerometer(){
-        sensorManager.registerListener((SensorEventListener) this, accelerometer,12000);
-        sensorManager.registerListener((SensorEventListener) this, gravity, 12000);
-        sensorManager.registerListener((SensorEventListener)this, magnetic, 12000);
+        sensorManager.registerListener(this, accelerometer,12000);
+        sensorManager.registerListener(this, gravity, 12000);
+        sensorManager.registerListener(this, magnetic, 12000);
     }
 
 
@@ -153,24 +155,11 @@ public class Accelerometer implements SensorEventListener {
     }
 
     private float computeDeltaAcce() {
-        double scalarProduct = (speedX*lastX) + (speedY*lastY) + (speedZ*lastZ);
+        Log.d(TAG, ""+gps.getSpeedX()+" "+gps.getSpeedY()+" "+gps.getSpeedZ());
 
-        Log.d(TAG, ""+this.speedX+" "+this.speedY+" "+this.speedZ);
-
-        double speedModule = Math.sqrt(speedX*speedX + speedY*speedY + speedZ*speedZ);
+        double scalarProduct = (gps.getSpeedX()*lastX) + (gps.getSpeedY()*lastY) + (gps.getSpeedZ()*lastZ);
+        double speedModule = Math.sqrt(gps.getSpeedX()*gps.getSpeedX() + gps.getSpeedY()*gps.getSpeedZ() + gps.getSpeedZ()*gps.getSpeedZ());
 
         return (float) (scalarProduct / speedModule);
-    }
-
-    public void setSpeedX(double speedX) {
-        this.speedX = speedX;
-    }
-
-    public void setSpeedY(double speedY) {
-        this.speedY = speedY;
-    }
-
-    public void setSpeedZ(double speedZ) {
-        this.speedZ = speedZ;
     }
 }

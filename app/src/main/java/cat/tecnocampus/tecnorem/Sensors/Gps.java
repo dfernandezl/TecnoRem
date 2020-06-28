@@ -28,7 +28,7 @@ public class Gps extends AppCompatActivity implements LocationListener {
 
     final String TAG = "GPS";
     private final static int ALL_PERMISSIONS_RESULT = 101;
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 5;
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
     private static final long MIN_TIME_BW_UPDATES = 2000;
 
     private LocationManager locationManager;
@@ -43,14 +43,12 @@ public class Gps extends AppCompatActivity implements LocationListener {
     private double lastLatitude, lastLongitude;
     private long lastTime;
 
-    private double distance, bearing;
+    private double speedX, speedY, speedZ;
 
-    private Accelerometer accelerometer;
+    private double distance, bearing;
 
     public Gps(Context context) {
         this.context = context;
-
-        accelerometer = new Accelerometer(context);
 
         locationManager = (LocationManager) context.getSystemService(Service.LOCATION_SERVICE);
         isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -270,15 +268,22 @@ public class Gps extends AppCompatActivity implements LocationListener {
         distance = res[0];
         bearing = res[1];
 
-        double speedX = (distance * Math.cos(bearing)) / deltaTime;
-        double speedY = (distance * Math.sin(bearing)) / deltaTime;
-        double speedZ = 0;
+        speedX = (distance * Math.cos(bearing)) / deltaTime;
+        speedY = (distance * Math.sin(bearing)) / deltaTime;
+        speedZ = 0;
 
         Log.d(TAG, ""+speedX+" "+speedY+" "+speedZ); //OK WORKING
-
-        accelerometer.setSpeedX(speedX);
-        accelerometer.setSpeedY(speedY);
-        accelerometer.setSpeedZ(speedZ);
     }
 
+    public double getSpeedX() {
+        return speedX;
+    }
+
+    public double getSpeedY() {
+        return speedY;
+    }
+
+    public double getSpeedZ() {
+        return speedZ;
+    }
 }
