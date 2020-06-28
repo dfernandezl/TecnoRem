@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">TecnoRem</string>
-
+    <string name="current_strokes">current strokes</string>
+    <string name="start">START</string>
+    <string name="time">00:00:00</string>
+    <string name="minus">-</string>
+    <string name="selected_strokes_per_minute">20</string>
+    <string name="plus">+</string>
+    <string name="current_strokes_per_minute">CURRENT STROKES PER MINUTE</string>
 
 
 </resources>

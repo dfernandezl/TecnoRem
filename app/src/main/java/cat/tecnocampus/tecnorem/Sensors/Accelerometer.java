@@ -10,6 +10,8 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.LinkedList;
+
 import cat.tecnocampus.tecnorem.R;
 
 public class Accelerometer implements SensorEventListener {
@@ -20,14 +22,17 @@ public class Accelerometer implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer, gravity, magnetic;
 
-    private TextView currentAcce;
+    private TextView txtStrokesPerMinute;
 
     private Context context;
 
     private float deltaX = 0;
     private float deltaY = 0;
     private float deltaZ = 0;
-    private float deltaAcce = 0;
+    private float lastAcce = 0;
+
+    private int stroke, strokesPerMinute = 0;
+    private MovingAverage movingAverage;
 
     private float[] gravityValues = null;
     private float[] magneticValues = null;
@@ -37,9 +42,11 @@ public class Accelerometer implements SensorEventListener {
     private Gps gps;
 
     public Vibrator v;
+    private float deltaAcce;
 
     public Accelerometer(Context context) {
         this.context = context;
+        movingAverage = new MovingAverage(10);
 
         gps = new Gps(context);
 
@@ -65,9 +72,9 @@ public class Accelerometer implements SensorEventListener {
     }
 
     public void startAccelerometer(){
-        sensorManager.registerListener(this, accelerometer,12000);
-        sensorManager.registerListener(this, gravity, 12000);
-        sensorManager.registerListener(this, magnetic, 12000);
+        sensorManager.registerListener(this, accelerometer,1000000);
+        sensorManager.registerListener(this, gravity, 1000000);
+        sensorManager.registerListener(this, magnetic, 1000000);
     }
 
 
@@ -105,21 +112,23 @@ public class Accelerometer implements SensorEventListener {
             deltaY = Math.abs(lastY - earthAcc[1]);
             deltaZ = Math.abs(lastZ - earthAcc[2]);
 
+            deltaAcce = Math.abs(lastAcce - computeDeltaAcce());
+            Log.d(TAG, ""+deltaAcce);
+
             // if the change is below 2, it is just plain noise
-            if (deltaX < 2)
-                deltaX = 0;
-            if (deltaY < 2)
-                deltaY = 0;
-            if (deltaZ < 2)
-                deltaZ = 0;
+            if (deltaAcce == 0){
+                stroke = 0;
+            } else{
+                stroke = 1;
+            }
+
+             strokesPerMinute = (int) (60 / (movingAverage.next(stroke) * 10));
 
             lastX = earthAcc[0];
             lastY = earthAcc[1];
             lastZ = earthAcc[2];
 
-            deltaAcce = computeDeltaAcce();
-
-            vibrate();
+            lastAcce = computeDeltaAcce();
 
         } else if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
             gravityValues = event.values;
@@ -136,30 +145,53 @@ public class Accelerometer implements SensorEventListener {
     // if the change in the accelerometer value is big enough, then vibrate!
     // our threshold is MaxValue/2
     public void vibrate() {
-        if (deltaAcce > vibrateThreshold) {
+        if (lastAcce > vibrateThreshold) {
             v.vibrate(50);
         }
     }
 
     public void initializeViews(){
-        currentAcce = (TextView) ((Activity)context).findViewById(R.id.currentAcce);
+        txtStrokesPerMinute = (TextView) ((Activity)context).findViewById(R.id.currentAcce);
     }
 
     public void displayCleanValues() {
-        currentAcce.setText("0.0");
+        txtStrokesPerMinute.setText("0.0");
     }
 
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
-        currentAcce.setText(Float.toString(deltaAcce));
+        txtStrokesPerMinute.setText(Float.toString(strokesPerMinute));
     }
 
     private float computeDeltaAcce() {
-        Log.d(TAG, ""+gps.getSpeedX()+" "+gps.getSpeedY()+" "+gps.getSpeedZ());
-
         double scalarProduct = (gps.getSpeedX()*lastX) + (gps.getSpeedY()*lastY) + (gps.getSpeedZ()*lastZ);
         double speedModule = Math.sqrt(gps.getSpeedX()*gps.getSpeedX() + gps.getSpeedY()*gps.getSpeedZ() + gps.getSpeedZ()*gps.getSpeedZ());
 
         return (float) (scalarProduct / speedModule);
+    }
+}
+
+class MovingAverage {
+    double sum;
+    int size;
+    LinkedList<Integer> list;
+
+    /** Initialize your data structure here. */
+    public MovingAverage(int size) {
+        this.list = new LinkedList<>();
+        this.size = size;
+    }
+
+    public double next(int val) {
+        sum += val;
+        list.offer(val);
+
+        if(list.size()<=size){
+            return sum/list.size();
+        }
+
+        sum -= list.poll();
+
+        return sum/size;
     }
 }

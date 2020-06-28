@@ -29,7 +29,7 @@ public class Gps extends AppCompatActivity implements LocationListener {
     final String TAG = "GPS";
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
-    private static final long MIN_TIME_BW_UPDATES = 2000;
+    private static final long MIN_TIME_BW_UPDATES = 1000;
 
     private LocationManager locationManager;
     private Location loc;
