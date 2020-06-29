@@ -2,6 +2,7 @@ package cat.tecnocampus.tecnorem.Sensors;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -38,6 +39,8 @@ public class Accelerometer implements SensorEventListener {
     private float[] magneticValues = null;
 
     private float vibrateThreshold = 0;
+
+    private int desiredStrokesPerMinute = 0;
 
     private Gps gps;
 
@@ -161,6 +164,17 @@ public class Accelerometer implements SensorEventListener {
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
         txtStrokesPerMinute.setText(Float.toString(strokesPerMinute));
+
+        if(strokesPerMinute > desiredStrokesPerMinute){
+            txtStrokesPerMinute.setTextColor(Color.GREEN);
+        } else if (strokesPerMinute == desiredStrokesPerMinute){
+            txtStrokesPerMinute.setTextColor(Color.BLUE);
+        }
+        else{
+            txtStrokesPerMinute.setTextColor(Color.RED);
+        }
+
+
     }
 
     private float computeDeltaAcce() {
@@ -168,6 +182,10 @@ public class Accelerometer implements SensorEventListener {
         double speedModule = Math.sqrt(gps.getSpeedX()*gps.getSpeedX() + gps.getSpeedY()*gps.getSpeedZ() + gps.getSpeedZ()*gps.getSpeedZ());
 
         return (float) (scalarProduct / speedModule);
+    }
+
+    public void setDesiredStrokesPerMinute(int desiredStrokesPerMinute) {
+        this.desiredStrokesPerMinute = desiredStrokesPerMinute;
     }
 }
 

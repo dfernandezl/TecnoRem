@@ -1,6 +1,7 @@
 package cat.tecnocampus.tecnorem;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -33,10 +34,13 @@ public class MainActivity extends Activity {
         gps = new Gps(this);
 
         accelerometer.initializeViews();
+        accelerometer.setDesiredStrokesPerMinute(minteger);
 
         btStartPause = (Button)findViewById(R.id.btStartPause);
         increase = (Button)findViewById(R.id.increase);
         decrease = (Button)findViewById(R.id.decrease);
+
+        btStartPause.setBackgroundColor(Color.GREEN);
 
         btStartPause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +61,7 @@ public class MainActivity extends Activity {
         accelerometer.stopAccelerometer();
         metronome.stopMetronome();
         btStartPause.setText("START");
+        btStartPause.setBackgroundColor(Color.GREEN);
         accelerometer.displayCleanValues();
     }
 
@@ -65,6 +70,7 @@ public class MainActivity extends Activity {
         accelerometer.startAccelerometer();
         metronome.startMetronome();
         btStartPause.setText("STOP");
+        btStartPause.setBackgroundColor(Color.RED);
     }
 
     //onResume() register the accelerometer for listening the events
@@ -109,6 +115,7 @@ public class MainActivity extends Activity {
     public void display(int number){
         TextView displayInteger = (TextView) findViewById(R.id.integer_number);
         displayInteger.setText(""+number);
+        accelerometer.setDesiredStrokesPerMinute(number);
         if(chronometer.isTimeRunning()){
             metronome.stopMetronome();
         }
