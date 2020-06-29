@@ -30,7 +30,8 @@ public class Gps extends AppCompatActivity implements LocationListener {
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
     private static final long MIN_TIME_BW_UPDATES = 1000;
-
+    private static final long Samples_BW_UPDATES = 5;
+ 
     private LocationManager locationManager;
     private Location loc;
     private ArrayList<String> permissions = new ArrayList<>();
@@ -46,7 +47,9 @@ public class Gps extends AppCompatActivity implements LocationListener {
     private double speedX, speedY, speedZ;
 
     private double distance, bearing;
-
+    private double[] samplesX = new double(Samples_BW_UPDATES)
+    private double[] samplesY
+    private double[] samplesZ
     public Gps(Context context) {
         this.context = context;
 
@@ -257,8 +260,11 @@ public class Gps extends AppCompatActivity implements LocationListener {
 
     private void updateSpeeds(Location loc) {
         float[] res = new float[2];
-        Location.distanceBetween(lastLatitude, lastLongitude, loc.getLatitude(), loc.getLongitude(), res);
-
+        Location.distanceBetween(lastLatitude[0], lastLongitude[0], loc.getLatitude(), loc.getLongitude(), res);
+        for (i=0;i<SAMPLES_BW_UPDATES-1;i++)
+            lastLatitude[i]=lastLatitude[i+1];
+        lastLatitude[10]=loc.getLatitude()
+        
         long deltaTime = loc.getTime() - lastTime;
 
         lastLatitude = loc.getLatitude();
