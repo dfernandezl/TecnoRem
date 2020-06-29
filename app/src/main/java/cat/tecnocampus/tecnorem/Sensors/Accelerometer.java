@@ -31,6 +31,9 @@ public class Accelerometer implements SensorEventListener {
     private float deltaY = 0;
     private float deltaZ = 0;
     private float lastAcce = 0;
+    private bool accelerate=fase;
+    private int PosIntegration =0;  -3 -4 -5- -3 -2- 1 -1 2  4  5 5 5 6  si suma de les darrers 3 > 10  i accelerate =false=> palada  => canviem accelerate a true i apuntem palada i calculem velocitat
+    private int NegIntegration =0;   si suma de les darrers 3 < -5   i accelerate =true=> canviem accelerate a false  i apuntem palada i calculem velocitat
 
     private int stroke, strokesPerMinute = 0;
     private MovingAverage movingAverage;
