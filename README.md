@@ -12,3 +12,6 @@ The application uses sensors data (GPS, accelerotemer, magnetic field and girosc
   * Star/Stop chronometer and sensors recording.
   * Acoustic signal (metronome) to follow the desired spm.
   * Desired SPM selector to configure metronome.
+
+
+This project has been developed as a end-of-degree project for the Tecnocampus (Universitat Pompeu Fabra) degree in Software Engineering.
