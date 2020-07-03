@@ -1,6 +1,7 @@
 # TecnoRem
 
 
+![TecnoRem Logo](/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 This Android application is designed to help rowers during their trainings and competitions in order to imporve their rowing skills.
 
