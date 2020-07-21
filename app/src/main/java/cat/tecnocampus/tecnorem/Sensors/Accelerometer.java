@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Vibrator;
 import android.util.Log;
+import android.widget.Chronometer;
 import android.widget.TextView;
 
 import java.util.LinkedList;
@@ -63,7 +64,7 @@ public class Accelerometer implements SensorEventListener {
             vibrateThreshold = 2;
         }
         else {
-            // fail, accelerometer not available (print some message!)
+            // fail, accelerometer not available
         }
 
         //initialize vibration
@@ -79,7 +80,6 @@ public class Accelerometer implements SensorEventListener {
         sensorManager.registerListener(this, gravity, 1000000);
         sensorManager.registerListener(this, magnetic, 1000000);
     }
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -194,7 +194,7 @@ class MovingAverage {
     int size;
     LinkedList<Integer> list;
 
-    /** Initialize your data structure here. */
+    /** Initialize data structure here. */
     public MovingAverage(int size) {
         this.list = new LinkedList<>();
         this.size = size;

@@ -57,4 +57,9 @@ public class Chronometer{
             handler.postDelayed(this,0);
         }
     };
+
+    public void clearChronoText() throws Throwable {
+        this.finalize();
+        chrono.setText("00:00:000");
+    }
 }
