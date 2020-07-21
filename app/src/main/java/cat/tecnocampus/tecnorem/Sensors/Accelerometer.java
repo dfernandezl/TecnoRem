@@ -9,7 +9,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Vibrator;
 import android.util.Log;
-import android.widget.Chronometer;
 import android.widget.TextView;
 
 import java.util.LinkedList;
